@@ -1,0 +1,9 @@
+apply plugin: 'java'
+
+allprojects{
+    sourceCompatibility = 1.7
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
