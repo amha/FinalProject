@@ -3,32 +3,27 @@ package com.udacity.gradle.builditbigger;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import com.example.JokeGenesis;
+
 import com.example.amhamogus.myapplication.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
-import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 
 import java.io.IOException;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Manfred"));
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -52,18 +47,18 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Click handler that makes a call to backend.
+     */
     public void tellJoke(View view) {
 
-        // Used for Task 2
-        Intent intent = new Intent(getApplicationContext(),
-                amogus.com.androidjokelib.JokeMainActivity.class);
-        intent.putExtra("JOKE", JokeGenesis.getJoke());
-        startActivity(intent);
+        new EndpointsAsyncTask().execute(new Pair<Context, String>(this, "Manfred"));
 
-        // Used for Task 1
-        //Toast.makeText(this, JokeGenesis.getJoke(), Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * AsycnTask that makes a call to the end point and retrieves a joke.
+     */
     class EndpointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
         //was private static
         MyApi myApiService = null;
@@ -71,11 +66,12 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected String doInBackground(Pair<Context, String>... params) {
-            if(myApiService == null) {  // Only do this once
+            if (myApiService == null) {  // Only do this once
                 MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
                         .setRootUrl("https://amogus-udacity-project4.appspot.com/_ah/api/");
                 // end options for devappserver
 
+                // call the backend
                 myApiService = builder.build();
             }
 
@@ -89,9 +85,26 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        /**
+         * Called when the AsyncTask has attempted to contact the backend.
+         *
+         * @param result A string that represents a joke.
+         */
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+            // check if we have a joke or not
+            if (result != null) {
+                // Success State
+                Intent intent = new Intent(getApplicationContext(),
+                        amogus.com.androidjokelib.JokeMainActivity.class);
+                intent.putExtra("JOKE", result);
+                startActivity(intent);
+            } else {
+                {
+                    // Error State
+                    Toast.makeText(context, "Empty result from the cloud.", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 }

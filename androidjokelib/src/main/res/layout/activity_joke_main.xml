@@ -10,11 +10,11 @@
     tools:context="amogus.com.androidjokelib.JokeMainActivity">
 
     <TextView
+        android:id="@+id/joke_display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="light"
         android:text="test"
-        android:textSize="20sp"
-        android:id="@+id/joke_display"/>
+        android:textSize="20sp" />
 
 </RelativeLayout>
